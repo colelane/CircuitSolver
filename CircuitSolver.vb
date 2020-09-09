@@ -1,11 +1,14 @@
-﻿Module CircuitSolver
+﻿Option Strict On
+Option Explicit On
+Option Compare Text
+Module CircuitSolver
 
     Sub Main()
         Dim userInput As String
         Console.WriteLine("What kind of circuit would you like to solve?")
         Console.WriteLine("1. Lab 3 oscillator")
         userInput = Console.ReadLine()
-        If userInput = 1 Then
+        If userInput = "1" Then
             Lab3Oscillator()
 
         End If
@@ -14,12 +17,15 @@
     End Sub
     Sub Lab3Oscillator()
         Dim R1, R2, C1, C2, C3, C4, C5, CP, CGS, CGD, CDS, L1, L2, F As Double
-        Dim XC1, XC2, XC3, XC4, XC5, XCP, XCGS, XCGD, XCDS, XL1, XL2 As Double
+        Dim XC1, XC2, XC3, XC4, XC5, XCP, XCGS, XCGD, XCDS, XL1, XL2, ZT, ZTAngle As Double
         Dim goodData As Boolean
         Const PI = 3.14159265359
 
+
         Do
             Try
+
+
                 Console.WriteLine("What is the value of R1?")
                 R1 = CDbl(Console.ReadLine)
                 Console.WriteLine("What is the value of R2?")
@@ -56,6 +62,11 @@
             End Try
         Loop Until goodData = True
 
+
+
+
+
+
         XC1 = (1 / (2 * PI * F * C1))
         XC2 = (1 / (2 * PI * F * C2))
         XC3 = (1 / (2 * PI * F * C3))
@@ -78,6 +89,15 @@
         Console.WriteLine("XCGD = " & XCGD)
         Console.WriteLine("XCDS = " & XCDS)
         Console.ReadLine()
+
+        ZT = ((1 / ((1 / R1) + (1 / XC2))) + XL2)
+        ZTAngle = Math.Atan(-XC2 / R1) + 90
+        Console.WriteLine(ZT)
+        Console.WriteLine(ZTAngle)
+        Console.ReadLine()
+
+
+
 
 
 
