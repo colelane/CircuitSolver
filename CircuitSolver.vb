@@ -8,8 +8,10 @@ Module CircuitSolver
         Dim BetaQ4, BetaQ5, BetaQ6, BetaDarlington, IBQ4, ICQ4, IEQ4, IBQ5, ICQ5, IEQ5, IBQ6, ICQ6, IEQ6 As Decimal
         Dim rPrimeEQ4, rPrimeEQ5, rPrimeEQ6, VoutQ4, VinQ4, AVQ4, VinDarlington, VoutDarlington, AVDarlington, OverallAV As Decimal
         Dim Userinput As String
+        Dim vout, vin, nfeed, fbgain, xr22 As Single
 
         VBE = 0.7
+
 
         Format("Scientific")
 
@@ -50,10 +52,10 @@ Module CircuitSolver
             Rgen = 50
             R17 = 100
             R18 = 2.2 * 10 ^ 3
-            R19 = 9.97 * 10 ^ 3
-            R20 = 9.97 * 10 ^ 3
-            R21 = 100.3 * 10 ^ 3
-            R22 = 219
+            R19 = 10 * 10 ^ 3
+            R20 = 10 * 10 ^ 3
+            R21 = 100 * 10 ^ 3
+            R22 = 220
         End If
 
         IB1 = (Vcc - VD1) / (R19 + R20)
@@ -74,9 +76,10 @@ Module CircuitSolver
         Console.WriteLine($"VR24 = { VR21}")
 
         IR21 = VR21 / R21
-        Console.WriteLine($"IR24 = { IR21}")
+        Console.WriteLine($"IR21 = { IR21}")
 
-        VR22 = (Vcc - VBE - VR20 - 0.0463477)
+        'VR22 = (Vcc - VBE - VR20 - 0.0463477)
+        VR22 = 12.4
         'the 0.0463477 is from the current backwards calculated 
         Console.WriteLine($"VR22 = { VR22}")
 
@@ -96,15 +99,16 @@ Module CircuitSolver
             Console.WriteLine($"Beta Q6?")
             BetaQ6 = Console.ReadLine
         Else
-            BetaQ4 = 250
-            BetaQ5 = 250
+            BetaQ4 = 200
+            BetaQ5 = 200
             BetaQ6 = 30
         End If
 
         BetaDarlington = BetaQ5 * BetaQ6
 
-        'IBQ5 = IR22 / BetaDarlington
-        IBQ5 = IR21 / 10
+        IBQ5 = IR22 / BetaDarlington
+        'IBQ5 = IR21 / 10
+
         Console.WriteLine($"IBQ5 = { IBQ5}")
 
         ICQ5 = IBQ5 * BetaQ5
@@ -143,13 +147,15 @@ Module CircuitSolver
         rPrimeEQ6 = 0.026 / IEQ6
         Console.WriteLine($"r'eQ6 = { rPrimeEQ6}")
 
+
         Console.WriteLine("This Part can change based on sourcecode")
         Console.ReadLine()
 
         'These formulas are based of what Lane and Rob did Together.
 
+        xr22 = ((R22 ^ -1) + (4820 ^ -1) + (5890 ^ -1)) ^ -1
 
-        VoutQ4 = (R21 ^ -1 + (BetaQ5 * (rPrimeEQ5 + (BetaQ6 * rPrimeEQ6))) ^ -1) ^ -1
+        VoutQ4 = (R21 ^ -1 + ((BetaQ5 + 1) * (rPrimeEQ5 + ((BetaQ6 + 1) * rPrimeEQ6))) ^ -1) ^ -1
         Console.WriteLine($"VoutQ4 (In Terms of Resistance) = { VoutQ4} ohms")
         'R21//(BetaQ5*(r'eQ5 + (BetaQ6)*(r'eQ6)))
 
@@ -161,7 +167,8 @@ Module CircuitSolver
         Console.WriteLine($"AVQ4 = { AVQ4}")
 
 
-        VoutDarlington = ((R22 ^ -1) + (R18 + (rPrimeEQ4 ^ -1 + (R17 + Rgen) ^ -1) ^ -1) ^ -1) ^ -1
+        Console.WriteLine($"xr22 = {xr22}")
+        VoutDarlington = ((xr22 ^ -1) + (R18 + (rPrimeEQ4 ^ -1 + (R17 + Rgen) ^ -1) ^ -1) ^ -1) ^ -1
         Console.WriteLine($"VoutDarlington (in terms of Resistance) = { VoutDarlington} Ohms")
         'R22//(R18+(R17+R18)//r'eQ4))
 
@@ -175,6 +182,17 @@ Module CircuitSolver
         OverallAV = AVDarlington * AVQ4
         Console.WriteLine($"Overall Gain = { OverallAV}")
 
+        vin = 0.5
+        Console.WriteLine($"Vin = {vin}vp-p")
+
+        nfeed = (vin) / 2
+        Console.WriteLine($"Negative Feedback = {nfeed}vp-p")
+
+        vout = nfeed * OverallAV
+        Console.WriteLine($"Vout = {vout}vp-p")
+
+        fbgain = vout / vin
+        Console.WriteLine($"AV with Negative Feedback = {fbgain}")
 
 
         Console.ReadLine()
